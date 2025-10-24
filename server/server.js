@@ -19,10 +19,13 @@ app.use((req, res, next) => {
   }
 });
 
-// Serve web front-end
-app.use(express.static(path.join(__dirname, '..', 'web')));
-// Also expose stocks directory for logo usage
-app.use('/stocks', express.static(path.join(__dirname, '..', 'stocks')));
+// Static files are served by Vercel in production
+if (!process.env.VERCEL) {
+  // Serve web front-end for local development
+  app.use(express.static(path.join(__dirname, '..')));
+  // Also expose stocks directory for logo usage
+  app.use('/stocks', express.static(path.join(__dirname, '..', 'stocks')));
+}
 
 app.get('/api/news', (req, res) => {
   res.json({ news: getNews(), meta: getMeta() });
