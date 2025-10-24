@@ -392,13 +392,33 @@ window.addEventListener('scroll', () => {
 });
 
 function connect() {
+  // Check if we're in production (Vercel)
+  const isProduction = location.hostname.includes('vercel.app') || location.hostname.includes('vercel.com') || location.protocol === 'https:';
+  
+  if (isProduction) {
+    // Use polling for Vercel (no persistent WebSocket support)
+    console.log('🔄 Using polling mode for production');
+    statusEl.textContent = 'Live (Polling)';
+    statusEl.className = 'status ok';
+    
+    // Initial fetch
+    fetchNewsPolling();
+    
+    // Poll every 30 seconds
+    setInterval(fetchNewsPolling, 30000);
+    return;
+  }
+  
+  // Local WebSocket connection
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   const ws = new WebSocket(`${proto}://${location.host}/ws`);
   let retry = 0;
+  
   ws.onopen = () => { 
     statusEl.textContent = 'Live'; 
     statusEl.className = 'status ok'; 
   };
+  
   ws.onmessage = (ev) => {
     try {
       const msg = JSON.parse(ev.data);
@@ -417,15 +437,41 @@ function connect() {
       }
     } catch (e) { console.warn('Bad message', e); }
   };
+  
   ws.onclose = () => {
     statusEl.textContent = 'Reconnecting...';
     statusEl.className = 'status err';
     setTimeout(connect, Math.min(10000, 1000 * ++retry));
   };
+  
   ws.onerror = () => {
     statusEl.textContent = 'Error';
     statusEl.className = 'status err';
   };
+}
+
+// Polling function for production
+async function fetchNewsPolling() {
+  try {
+    statusEl.textContent = 'Fetching...';
+    statusEl.className = 'status ok';
+    
+    const response = await fetch('/api/news');
+    const data = await response.json();
+    
+    allItems = data.news || [];
+    meta = data.meta || meta;
+    
+    skeletonEl.innerHTML = '';
+    render();
+    
+    statusEl.textContent = 'Live (Polling)';
+    statusEl.className = 'status ok';
+  } catch (error) {
+    console.error('Polling error:', error);
+    statusEl.textContent = 'Error';
+    statusEl.className = 'status err';
+  }
 }
 
 newBanner.addEventListener('click', () => {

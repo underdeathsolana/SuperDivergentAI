@@ -7,6 +7,18 @@ const { initNewsFetcher, getNews, getMeta } = require('./newsFetcher');
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+// Add CORS headers for Vercel
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 // Serve web front-end
 app.use(express.static(path.join(__dirname, '..', 'web')));
 // Also expose stocks directory for logo usage
@@ -54,6 +66,14 @@ initNewsFetcher(
   }
 );
 
-server.listen(PORT, () => {
-  console.log(`Crypto News Live server running on http://localhost:${PORT}`);
-});
+// For Vercel serverless deployment
+if (process.env.VERCEL) {
+  // Initialize news fetcher for serverless
+  initNewsFetcher(() => {}, () => {});
+  module.exports = app;
+} else {
+  // Local development with WebSocket
+  server.listen(PORT, () => {
+    console.log(`Crypto News Live server running on http://localhost:${PORT}`);
+  });
+}
