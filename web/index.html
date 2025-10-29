@@ -77,6 +77,51 @@
     <ul id="newsList" class="news-list"></ul>
   </main>
   
+  <!-- Welcome Terminal Modal -->
+  <div id="welcomeModal" class="welcome-modal">
+    <div class="welcome-terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <span class="term-btn red"></span>
+          <span class="term-btn yellow"></span>
+          <span class="term-btn green"></span>
+        </div>
+        <div class="terminal-title">SUPER_DIVERGENT_AI_TERMINAL</div>
+        <button class="welcome-close" aria-label="Close welcome terminal">&times;</button>
+      </div>
+      <div class="terminal-body">
+        <div class="welcome-content">
+          <div class="welcome-logo">
+            <img src="./stocks/SD.png" alt="Super Divergent AI" class="welcome-logo-img">
+            <h2>SUPER DIVERGENT AI</h2>
+          </div>
+          <div class="welcome-message">
+            <div class="terminal-line">
+              <span class="prompt-symbol">root@super-divergent:~$</span>
+              <span class="prompt-command">cat welcome_message.txt</span>
+            </div>
+            <div class="message-content">
+              <p>Super Divergent AI was created for the community, to support the development of the Divergent AI website. Therefore, the Super Divergent AI website launched its coin on PumpFun. The reward proceeds will be used, in part, to pay for hosting and server maintenance, and in part for buybacks.</p>
+              
+              <div class="contract-section">
+                <p><strong>Contract address:</strong></p>
+                <div class="contract-display">
+                  <code id="welcomeContractAddress">0x1234567890abcdef1234567890ABCDEF12345678</code>
+                  <button id="copyWelcomeContract" class="copy-btn" title="Copy contract address">📋</button>
+                </div>
+              </div>
+            </div>
+            <div class="welcome-actions">
+              <button id="welcomeOk" class="welcome-btn primary">OK, Let's Start!</button>
+              <button id="welcomeClose" class="welcome-btn secondary">Close</button>
+            </div>
+            <div class="terminal-cursor welcome-cursor">_</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Terminal Modal -->
   <div id="terminalModal" class="terminal-modal">
     <div class="terminal-window">

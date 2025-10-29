@@ -574,6 +574,230 @@ button, .nav-link, .mini-btn, .contract-badge {
   opacity: 0.6;
 }
 
+/* Welcome Terminal Modal */
+.welcome-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.welcome-terminal-window {
+  background: var(--terminal-bg);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(0, 255, 193, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: terminalGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes terminalGlow {
+  0% { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 193, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+  100% { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 255, 193, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+}
+
+.welcome-content {
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--terminal-green);
+  line-height: 1.6;
+}
+
+.welcome-logo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.welcome-logo-img {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 170, 0.8));
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.welcome-logo h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 30px rgba(0, 255, 193, 0.5);
+}
+
+.welcome-message {
+  font-size: 0.9rem;
+}
+
+.terminal-line {
+  margin-bottom: 1rem;
+  color: var(--terminal-green);
+}
+
+.message-content {
+  background: rgba(0, 20, 40, 0.6);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.message-content p {
+  margin: 0 0 1rem 0;
+  color: #e0e0e0;
+}
+
+.contract-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.contract-section strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.contract-display {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.contract-display code {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--terminal-green);
+  background: none;
+  border: none;
+  word-break: break-all;
+}
+
+.copy-btn {
+  background: linear-gradient(135deg, rgba(0, 255, 193, 0.2), rgba(255, 0, 255, 0.2));
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 193, 0.4), rgba(255, 0, 255, 0.4));
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 255, 193, 0.3);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.welcome-btn {
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  min-width: 120px;
+}
+
+.welcome-btn.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #000;
+  border-color: var(--accent);
+}
+
+.welcome-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 193, 0.4);
+  background: linear-gradient(135deg, #00ff88, #ff00dd);
+}
+
+.welcome-btn.secondary {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--terminal-green);
+  border-color: var(--terminal-green);
+}
+
+.welcome-btn.secondary:hover {
+  background: rgba(0, 255, 65, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 65, 0.2);
+}
+
+.welcome-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: var(--terminal-green);
+  animation: blink 1s infinite;
+  margin-left: 4px;
+}
+
+.welcome-close {
+  background: rgba(255, 100, 100, 0.2);
+  border: 1px solid #ff6464;
+  color: #ff6464;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.welcome-close:hover {
+  background: rgba(255, 100, 100, 0.4);
+  transform: scale(1.1);
+}
+
 /* Terminal Modal */
 .terminal-modal {
   display:none; position:fixed; inset:0; z-index:9999; 
@@ -716,6 +940,55 @@ button, .nav-link, .mini-btn, .contract-badge {
     border-radius: 6px;
   }
   
+  /* Welcome modal mobile */
+  .welcome-terminal-window {
+    width: 95%;
+    max-height: 90vh;
+    margin: 0.5rem;
+  }
+  
+  .welcome-content {
+    padding: 1rem;
+  }
+  
+  .welcome-logo-img {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .welcome-logo h2 {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+  }
+  
+  .message-content {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .contract-display {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .contract-display code {
+    text-align: center;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+  }
+  
+  .welcome-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .welcome-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+  }
+
   /* Terminal modal mobile */
   .terminal-modal {
     padding: .5rem;

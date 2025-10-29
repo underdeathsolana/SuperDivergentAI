@@ -56,6 +56,128 @@ document.addEventListener('visibilitychange', () => {
 
 animationId = requestAnimationFrame(drawParticles);
 
+// Welcome Modal on First Visit
+function showWelcomeModal() {
+  const hasVisited = localStorage.getItem('super-divergent-visited');
+  
+  if (!hasVisited) {
+    const welcomeModal = document.getElementById('welcomeModal');
+    welcomeModal.style.display = 'flex';
+    
+    // Typing effect for the message
+    setTimeout(() => {
+      typeWelcomeMessage();
+    }, 1000);
+  }
+}
+
+function typeWelcomeMessage() {
+  const messageElement = document.querySelector('.message-content p');
+  const fullMessage = messageElement.textContent;
+  messageElement.textContent = '';
+  
+  let i = 0;
+  const typeSpeed = 30;
+  
+  function typeChar() {
+    if (i < fullMessage.length) {
+      messageElement.textContent += fullMessage.charAt(i);
+      i++;
+      setTimeout(typeChar, typeSpeed);
+    } else {
+      // Show contract section after message is complete
+      setTimeout(() => {
+        document.querySelector('.contract-section').style.opacity = '1';
+        document.querySelector('.welcome-actions').style.opacity = '1';
+      }, 500);
+    }
+  }
+  
+  // Initially hide contract section and actions
+  document.querySelector('.contract-section').style.opacity = '0';
+  document.querySelector('.welcome-actions').style.opacity = '0';
+  
+  typeChar();
+}
+
+function closeWelcomeModal() {
+  const welcomeModal = document.getElementById('welcomeModal');
+  welcomeModal.style.animation = 'fadeOut 0.3s ease-out';
+  
+  setTimeout(() => {
+    welcomeModal.style.display = 'none';
+    // Mark as visited
+    localStorage.setItem('super-divergent-visited', 'true');
+  }, 300);
+}
+
+// Welcome Modal Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+  const welcomeOkBtn = document.getElementById('welcomeOk');
+  const welcomeCloseBtn = document.getElementById('welcomeClose');
+  const welcomeCloseX = document.querySelector('.welcome-close');
+  const copyWelcomeBtn = document.getElementById('copyWelcomeContract');
+  
+  // Close modal events
+  welcomeOkBtn?.addEventListener('click', closeWelcomeModal);
+  welcomeCloseBtn?.addEventListener('click', closeWelcomeModal);
+  welcomeCloseX?.addEventListener('click', closeWelcomeModal);
+  
+  // Copy contract from welcome modal
+  copyWelcomeBtn?.addEventListener('click', () => {
+    const contractAddress = document.getElementById('welcomeContractAddress').textContent;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(contractAddress).then(() => {
+        showWelcomeCopyNotification();
+      }).catch(() => {
+        fallbackCopy(contractAddress);
+      });
+    } else {
+      fallbackCopy(contractAddress);
+    }
+  });
+  
+  // Show welcome modal on first visit
+  setTimeout(showWelcomeModal, 500);
+});
+
+function showWelcomeCopyNotification() {
+  const copyBtn = document.getElementById('copyWelcomeContract');
+  const originalText = copyBtn.innerHTML;
+  
+  copyBtn.innerHTML = '✅';
+  copyBtn.style.background = 'linear-gradient(135deg, rgba(0, 255, 100, 0.4), rgba(0, 200, 255, 0.4))';
+  
+  setTimeout(() => {
+    copyBtn.innerHTML = originalText;
+    copyBtn.style.background = 'linear-gradient(135deg, rgba(0, 255, 193, 0.2), rgba(255, 0, 255, 0.2))';
+  }, 1500);
+}
+
+// Add fadeOut animation to CSS
+const welcomeCSS = document.createElement('style');
+welcomeCSS.textContent = `
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+`;
+document.head.appendChild(welcomeCSS);
+
+// Debug function to reset welcome modal (for testing)
+// Type resetWelcome() in browser console to test again
+window.resetWelcome = function() {
+  localStorage.removeItem('super-divergent-visited');
+  location.reload();
+};
+
 // Navigation toggle for mobile
 const navToggle = document.querySelector('.nav-toggle');
 const navMenu = document.querySelector('.nav-menu');
