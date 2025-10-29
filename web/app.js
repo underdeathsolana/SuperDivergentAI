@@ -251,6 +251,62 @@ window.forceWelcome = function() {
   }
 };
 
+// Welcome Banner Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+  const showWelcomeInfoBtn = document.getElementById('showWelcomeInfo');
+  const copyContractBtn = document.getElementById('copyContractBanner');
+  
+  // Show welcome info modal
+  if (showWelcomeInfoBtn) {
+    showWelcomeInfoBtn.addEventListener('click', () => {
+      const welcomeModal = document.getElementById('welcomeModal');
+      if (welcomeModal) {
+        welcomeModal.classList.add('show');
+        typeWelcomeMessage();
+      }
+    });
+  }
+  
+  // Copy contract from banner
+  if (copyContractBtn) {
+    copyContractBtn.addEventListener('click', () => {
+      const contractAddress = '0x1234567890abcdef1234567890ABCDEF12345678';
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(contractAddress).then(() => {
+          showBannerCopySuccess();
+        }).catch(() => {
+          fallbackCopy(contractAddress);
+        });
+      } else {
+        fallbackCopy(contractAddress);
+      }
+    });
+  }
+});
+
+function showBannerCopySuccess() {
+  const copyBtn = document.getElementById('copyContractBanner');
+  const contractText = copyBtn.querySelector('.contract-text');
+  const contractIcon = copyBtn.querySelector('.contract-icon');
+  
+  // Store original values
+  const originalText = contractText.textContent;
+  const originalIcon = contractIcon.textContent;
+  
+  // Show success state
+  contractText.textContent = 'Copied!';
+  contractIcon.textContent = '✅';
+  copyBtn.classList.add('copied');
+  
+  // Reset after 2 seconds
+  setTimeout(() => {
+    contractText.textContent = originalText;
+    contractIcon.textContent = originalIcon;
+    copyBtn.classList.remove('copied');
+  }, 2000);
+}
+
 // Debug localStorage
 console.log('Current localStorage visited status:', localStorage.getItem('super-divergent-visited'));
 
@@ -580,22 +636,7 @@ function generateStats() {
 }
 
 function renderPanels() {
-  // Generate fresh stats from current news items
-  generateStats();
-  
-  // Render source stats
-  sourceStatsEl.innerHTML = Object.entries(meta.sourceStats||{})
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,8)
-    .map(([s,c])=>`<li><span>${s}</span><span class="value">${c}</span></li>`)
-    .join('') || '<li><span>No sources</span><span class="value">0</span></li>';
-    
-  // Render category stats
-  categoryStatsEl.innerHTML = (meta.categories||[])
-    .slice(0,8)
-    .map(c=>`<li><span>${c.category}</span><span class="value">${c.count}</span></li>`)
-    .join('') || '<li><span>No categories</span><span class="value">0</span></li>';
-    
+  // Only render heatmap now that source/category panels are removed
   renderHeatmap();
 }
 

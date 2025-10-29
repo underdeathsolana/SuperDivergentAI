@@ -51,15 +51,27 @@
   </header>
   <main class="content">
     <div id="newBanner" class="new-banner" hidden><span id="newCount"></span> new articles • Click to show</div>
+    <!-- Persistent Welcome Banner -->
+    <div id="welcomeBanner" class="welcome-banner">
+      <div class="welcome-banner-content">
+        <div class="welcome-banner-left">
+          <img src="./stocks/SD.png" alt="Super Divergent AI" class="welcome-banner-logo">
+          <div class="welcome-banner-text">
+            <h3>Welcome to Super Divergent AI</h3>
+            <p>Community-driven crypto intelligence platform</p>
+          </div>
+        </div>
+        <div class="welcome-banner-right">
+          <button id="showWelcomeInfo" class="welcome-info-btn">Learn More</button>
+          <button id="copyContractBanner" class="contract-btn">
+            <span class="contract-text">Copy Contract</span>
+            <span class="contract-icon">📋</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <section id="dashboard" class="dashboard-panels">
-      <div class="panel" id="panelSources">
-        <h4>Sources</h4>
-        <ul id="sourceStats" class="mini-list"></ul>
-      </div>
-      <div class="panel" id="panelCategories">
-        <h4>Categories</h4>
-        <ul id="categoryStats" class="mini-list"></ul>
-      </div>
       <div class="panel" id="panelHeatmap">
         <h4 class="panel-title-flex">
           <span>24h Heatmap</span>
