@@ -100,9 +100,20 @@ document.querySelectorAll('.nav-link').forEach(link => {
       if (target === '#home') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (target === '#trending') {
-        document.getElementById('trendingSection')?.scrollIntoView({ behavior: 'smooth' });
+        const trendingSection = document.getElementById('trendingSection');
+        if (trendingSection) {
+          trendingSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          // Scroll to dashboard if trending section doesn't exist
+          document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
+        }
       } else if (target === '#sources') {
-        document.getElementById('newsList')?.scrollIntoView({ behavior: 'smooth' });
+        const dashboard = document.getElementById('dashboard');
+        if (dashboard) {
+          dashboard.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          document.getElementById('newsList')?.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     } else {
       // External links - close mobile menu
@@ -336,10 +347,57 @@ function renderHeatmap() {
   });
 }
 
+function generateStats() {
+  // Generate source stats from current items
+  const sourceStats = {};
+  const categoryStats = {};
+  
+  allItems.forEach(item => {
+    // Count sources
+    if (item.source) {
+      sourceStats[item.source] = (sourceStats[item.source] || 0) + 1;
+    }
+    
+    // Generate categories from keywords in titles and descriptions
+    const text = (item.title + ' ' + (item.description || '')).toLowerCase();
+    const cryptoKeywords = [
+      'bitcoin', 'btc', 'ethereum', 'eth', 'blockchain', 'crypto', 'defi', 
+      'nft', 'solana', 'cardano', 'binance', 'trading', 'mining', 'wallet',
+      'altcoin', 'doge', 'market', 'price', 'bull', 'bear', 'hodl', 'investment'
+    ];
+    
+    cryptoKeywords.forEach(keyword => {
+      if (text.includes(keyword)) {
+        const category = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+        categoryStats[category] = (categoryStats[category] || 0) + 1;
+      }
+    });
+  });
+  
+  // Update meta with generated stats
+  meta.sourceStats = sourceStats;
+  meta.categories = Object.entries(categoryStats)
+    .map(([category, count]) => ({ category, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
 function renderPanels() {
-  // source stats
-  sourceStatsEl.innerHTML = Object.entries(meta.sourceStats||{}).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([s,c])=>`<li><span>${s}</span><span class="value">${c}</span></li>`).join('');
-  categoryStatsEl.innerHTML = (meta.categories||[]).slice(0,12).map(c=>`<li><span>${c.category}</span><span class="value">${c.count}</span></li>`).join('');
+  // Generate fresh stats from current news items
+  generateStats();
+  
+  // Render source stats
+  sourceStatsEl.innerHTML = Object.entries(meta.sourceStats||{})
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,8)
+    .map(([s,c])=>`<li><span>${s}</span><span class="value">${c}</span></li>`)
+    .join('') || '<li><span>No sources</span><span class="value">0</span></li>';
+    
+  // Render category stats
+  categoryStatsEl.innerHTML = (meta.categories||[])
+    .slice(0,8)
+    .map(c=>`<li><span>${c.category}</span><span class="value">${c.count}</span></li>`)
+    .join('') || '<li><span>No categories</span><span class="value">0</span></li>';
+    
   renderHeatmap();
 }
 
@@ -553,6 +611,95 @@ setTimeout(() => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(()=>{});
 }
+
+// Copy contract function for footer
+function copyContract() {
+  const contractAddress = '0x1234567890abcdef1234567890ABCDEF12345678';
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(contractAddress).then(() => {
+      // Show success notification
+      const notification = document.createElement('div');
+      notification.className = 'copy-notification';
+      notification.textContent = 'Contract address copied!';
+      notification.style.cssText = `
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #000;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 8px 32px rgba(0,255,193,0.4);
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 2000);
+    }).catch(() => {
+      // Fallback for older browsers
+      fallbackCopy(contractAddress);
+    });
+  } else {
+    fallbackCopy(contractAddress);
+  }
+}
+
+function fallbackCopy(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  textArea.style.top = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
+    alert('Contract address copied to clipboard!');
+  } catch (err) {
+    console.error('Could not copy text: ', err);
+    alert('Contract: ' + text);
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+// Add CSS for notifications
+const notificationCSS = document.createElement('style');
+notificationCSS.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(notificationCSS);
 
 // Binance price feed (simplified)
 const priceMap = {};
