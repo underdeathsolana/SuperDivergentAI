@@ -853,7 +853,7 @@ if ('serviceWorker' in navigator) {
 
 // Copy contract function for footer
 function copyContract() {
-  const contractAddress = '0x1234567890abcdef1234567890ABCDEF12345678';
+  const contractAddress = 'SOON';
   
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(contractAddress).then(() => {
