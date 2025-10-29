@@ -58,16 +58,27 @@ animationId = requestAnimationFrame(drawParticles);
 
 // Welcome Modal on First Visit
 function showWelcomeModal() {
+  // Check URL parameter first
+  const forceWelcome = checkWelcomeParam();
   const hasVisited = localStorage.getItem('super-divergent-visited');
   
-  if (!hasVisited) {
+  console.log('🔍 Checking welcome modal...', { hasVisited, forceWelcome });
+  
+  if (!hasVisited || forceWelcome) {
     const welcomeModal = document.getElementById('welcomeModal');
-    welcomeModal.style.display = 'flex';
+    console.log('Welcome modal element:', welcomeModal);
     
-    // Typing effect for the message
-    setTimeout(() => {
-      typeWelcomeMessage();
-    }, 1000);
+    if (welcomeModal) {
+      welcomeModal.classList.add('show');
+      console.log('Welcome modal shown');
+      
+      // Typing effect for the message
+      setTimeout(() => {
+        typeWelcomeMessage();
+      }, 1000);
+    } else {
+      console.error('Welcome modal element not found!');
+    }
   }
 }
 
@@ -102,44 +113,23 @@ function typeWelcomeMessage() {
 
 function closeWelcomeModal() {
   const welcomeModal = document.getElementById('welcomeModal');
+  console.log('Closing welcome modal');
+  
   welcomeModal.style.animation = 'fadeOut 0.3s ease-out';
   
   setTimeout(() => {
-    welcomeModal.style.display = 'none';
+    welcomeModal.classList.remove('show');
+    welcomeModal.style.animation = '';
     // Mark as visited
     localStorage.setItem('super-divergent-visited', 'true');
+    console.log('Welcome modal closed and marked as visited');
   }, 300);
 }
 
 // Welcome Modal Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-  const welcomeOkBtn = document.getElementById('welcomeOk');
-  const welcomeCloseBtn = document.getElementById('welcomeClose');
-  const welcomeCloseX = document.querySelector('.welcome-close');
-  const copyWelcomeBtn = document.getElementById('copyWelcomeContract');
-  
-  // Close modal events
-  welcomeOkBtn?.addEventListener('click', closeWelcomeModal);
-  welcomeCloseBtn?.addEventListener('click', closeWelcomeModal);
-  welcomeCloseX?.addEventListener('click', closeWelcomeModal);
-  
-  // Copy contract from welcome modal
-  copyWelcomeBtn?.addEventListener('click', () => {
-    const contractAddress = document.getElementById('welcomeContractAddress').textContent;
-    
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(contractAddress).then(() => {
-        showWelcomeCopyNotification();
-      }).catch(() => {
-        fallbackCopy(contractAddress);
-      });
-    } else {
-      fallbackCopy(contractAddress);
-    }
-  });
-  
-  // Show welcome modal on first visit
-  setTimeout(showWelcomeModal, 500);
+  console.log('DOMContentLoaded fired');
+  initWelcomeModal();
 });
 
 function showWelcomeCopyNotification() {
@@ -171,12 +161,98 @@ welcomeCSS.textContent = `
 `;
 document.head.appendChild(welcomeCSS);
 
+// Fallback if DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+  // DOM is still loading
+} else {
+  // DOM is already loaded
+  console.log('DOM already loaded, initializing welcome modal...');
+  initWelcomeModal();
+}
+
+function initWelcomeModal() {
+  const welcomeOkBtn = document.getElementById('welcomeOk');
+  const welcomeCloseBtn = document.getElementById('welcomeClose');
+  const welcomeCloseX = document.querySelector('.welcome-close');
+  const copyWelcomeBtn = document.getElementById('copyWelcomeContract');
+  
+  console.log('Welcome modal elements:', {
+    okBtn: welcomeOkBtn,
+    closeBtn: welcomeCloseBtn,
+    closeX: welcomeCloseX,
+    copyBtn: copyWelcomeBtn
+  });
+  
+  // Close modal events
+  if (welcomeOkBtn) welcomeOkBtn.addEventListener('click', closeWelcomeModal);
+  if (welcomeCloseBtn) welcomeCloseBtn.addEventListener('click', closeWelcomeModal);
+  if (welcomeCloseX) welcomeCloseX.addEventListener('click', closeWelcomeModal);
+  
+  // Copy contract from welcome modal
+  if (copyWelcomeBtn) {
+    copyWelcomeBtn.addEventListener('click', () => {
+      const contractAddress = document.getElementById('welcomeContractAddress').textContent;
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(contractAddress).then(() => {
+          showWelcomeCopyNotification();
+        }).catch(() => {
+          fallbackCopy(contractAddress);
+        });
+      } else {
+        fallbackCopy(contractAddress);
+      }
+    });
+  }
+  
+  // Show welcome modal on first visit
+  console.log('Scheduling welcome modal...');
+  setTimeout(showWelcomeModal, 1000);
+}
+
 // Debug function to reset welcome modal (for testing)
 // Type resetWelcome() in browser console to test again
 window.resetWelcome = function() {
   localStorage.removeItem('super-divergent-visited');
+  console.log('🔄 Welcome modal reset! Reloading page...');
   location.reload();
 };
+
+// Check if user wants to see welcome again via URL parameter
+// Add ?welcome=true to URL to force show welcome modal
+function checkWelcomeParam() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('welcome') === 'true') {
+    localStorage.removeItem('super-divergent-visited');
+    console.log('🎯 Welcome forced via URL parameter');
+    // Remove the parameter from URL after processing
+    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    window.history.replaceState({path: newUrl}, '', newUrl);
+    return true;
+  }
+  return false;
+}
+
+// Debug info logging
+console.log('🚀 Super Divergent AI - Debug Info:');
+console.log('📋 Welcome Modal Status:', localStorage.getItem('super-divergent-visited') ? 'Already shown' : 'Will show on load');
+console.log('🔧 Reset Welcome: Type resetWelcome() in console');
+console.log('🔗 Force Welcome: Add ?welcome=true to URL');
+console.log('⚡ Force Welcome Now: Type forceWelcome() in console');
+
+// Force show welcome modal for testing
+window.forceWelcome = function() {
+  const welcomeModal = document.getElementById('welcomeModal');
+  if (welcomeModal) {
+    welcomeModal.classList.add('show');
+    console.log('Welcome modal forced to show');
+  } else {
+    console.error('Welcome modal not found');
+  }
+};
+
+// Debug localStorage
+console.log('Current localStorage visited status:', localStorage.getItem('super-divergent-visited'));
 
 // Navigation toggle for mobile
 const navToggle = document.querySelector('.nav-toggle');

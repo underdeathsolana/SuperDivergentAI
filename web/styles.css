@@ -574,17 +574,63 @@ button, .nav-link, .mini-btn, .contract-badge {
   opacity: 0.6;
 }
 
+.admin-controls {
+  margin-top: 0.5rem;
+  opacity: 0.3;
+  font-size: 0.6rem;
+}
+
+.admin-controls:hover {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.admin-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #666;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.6rem;
+  transition: all 0.2s ease;
+}
+
+.admin-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.admin-separator {
+  margin: 0 0.5rem;
+}
+
+.admin-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.6rem;
+  transition: color 0.2s ease;
+}
+
+.admin-link:hover {
+  color: var(--accent);
+}
+
 /* Welcome Terminal Modal */
 .welcome-modal {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.95);
-  display: flex;
+  display: none; /* Hidden by default */
   align-items: center;
   justify-content: center;
   z-index: 3000;
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+}
+
+.welcome-modal.show {
+  display: flex;
   animation: fadeIn 0.5s ease-out;
 }
 
