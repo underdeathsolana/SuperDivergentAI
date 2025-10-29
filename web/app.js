@@ -1,19 +1,34 @@
-// Particle background
+// Particle background - optimized for mobile
 const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
 let particles = [];
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize); resize();
-for (let i = 0; i < 110; i++) {
+let animationId;
+
+// Detect if device is mobile for performance optimization
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
+function resize() { 
+  canvas.width = window.innerWidth; 
+  canvas.height = window.innerHeight; 
+}
+
+window.addEventListener('resize', resize); 
+resize();
+
+// Reduce particle count on mobile for better performance
+const particleCount = isMobile ? 50 : 110;
+
+for (let i = 0; i < particleCount; i++) {
   particles.push({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
     r: Math.random() * 2 + 0.5,
-    dx: (Math.random() - 0.5) * 0.25,
-    dy: (Math.random() - 0.5) * 0.25,
+    dx: (Math.random() - 0.5) * (isMobile ? 0.15 : 0.25),
+    dy: (Math.random() - 0.5) * (isMobile ? 0.15 : 0.25),
     c: `hsl(${Math.random()*360},70%,55%)`
   });
 }
+
 function drawParticles() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
   particles.forEach(p => {
@@ -27,15 +42,49 @@ function drawParticles() {
     ctx.fill();
     ctx.globalAlpha = 1;
   });
-  requestAnimationFrame(drawParticles);
+  animationId = requestAnimationFrame(drawParticles);
 }
-requestAnimationFrame(drawParticles);
+
+// Pause animation when page is not visible (battery optimization)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    cancelAnimationFrame(animationId);
+  } else {
+    drawParticles();
+  }
+});
+
+animationId = requestAnimationFrame(drawParticles);
 
 // Navigation toggle for mobile
 const navToggle = document.querySelector('.nav-toggle');
 const navMenu = document.querySelector('.nav-menu');
-navToggle.addEventListener('click', () => {
+
+// Toggle mobile menu
+navToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
   navMenu.classList.toggle('active');
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+    navMenu.classList.remove('active');
+  }
+});
+
+// Close mobile menu on escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+    navMenu.classList.remove('active');
+  }
+});
+
+// Close mobile menu on window resize
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) {
+    navMenu.classList.remove('active');
+  }
 });
 
 // Nav link active state & smooth scroll
@@ -55,6 +104,9 @@ document.querySelectorAll('.nav-link').forEach(link => {
       } else if (target === '#sources') {
         document.getElementById('newsList')?.scrollIntoView({ behavior: 'smooth' });
       }
+    } else {
+      // External links - close mobile menu
+      navMenu.classList.remove('active');
     }
   });
 });

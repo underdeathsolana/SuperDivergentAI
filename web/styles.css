@@ -1,4 +1,21 @@
-* { box-sizing: border-box; }
+* { 
+  box-sizing: border-box; 
+  /* Touch-friendly scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent zoom on input focus on iOS */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  select, textarea, input[type="text"], input[type="password"], 
+  input[type="datetime"], input[type="datetime-local"], 
+  input[type="date"], input[type="month"], input[type="time"], 
+  input[type="week"], input[type="number"], input[type="email"], 
+  input[type="url"], input[type="search"], input[type="tel"], 
+  input[type="color"] {
+    font-size: 16px;
+  }
+}
+
 body {
   margin: 0;
   font-family: 'Inter', system-ui, sans-serif;
@@ -7,6 +24,14 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   padding-top: 75px; /* for fixed nav */
+  /* Improve text rendering on mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Prevent text size adjustment on mobile */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 :root {
   --accent: #0fffc1;
@@ -34,6 +59,35 @@ body:before {
 @keyframes pulse { 0%,100% { opacity: .55; } 50% { opacity: .75; } }
 
 #bg { position: fixed; inset:0; width:100%; height:100%; z-index:-1; }
+
+/* Touch-friendly button styles */
+button, .nav-link, .mini-btn, .contract-badge {
+  /* Minimum touch target size */
+  min-height: 44px;
+  min-width: 44px;
+  /* Remove default touch highlighting */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Prevent accidental text selection */
+  touch-action: manipulation;
+}
+
+/* Better touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  .nav-link:hover, .mini-btn:hover, button:hover {
+    transform: none;
+  }
+  
+  .nav-link:active, .mini-btn:active, button:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+}
 
 /* Navigation Bar */
 .main-nav {
@@ -107,7 +161,107 @@ body:before {
 .nav-toggle:hover { background:rgba(0,255,193,0.2); border-color:var(--accent); }
 .nav-toggle span { display:block; width:24px; height:2px; background:var(--accent); transition:.3s; border-radius:2px; }
 
-@media (max-width: 768px) {
+/* Mobile First - Small screens (up to 480px) */
+@media (max-width: 480px) {
+  body { padding-top: 65px; font-size: 14px; }
+  
+  .main-nav { 
+    padding:.5rem .75rem; 
+    flex-wrap: wrap;
+  }
+  
+  .nav-left { gap: .5rem; }
+  .nav-logo { width: 36px; height: 36px; }
+  .nav-brand { 
+    font-size: .9rem; 
+    letter-spacing: 1px;
+    display: none; /* Hide brand text on very small screens */
+  }
+  
+  .contract-badge {
+    font-size: .45rem;
+    padding: .35rem .6rem;
+    margin-left: 0;
+  }
+  
+  .nav-menu { 
+    position: absolute; 
+    top: 60px; 
+    left: 0; 
+    right: 0; 
+    flex-direction: column; 
+    background: rgba(10,15,25,0.98); 
+    padding: .75rem; 
+    gap: .5rem; 
+    display: none; 
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    z-index: 999;
+  }
+  
+  .nav-menu.active { display: flex; }
+  .nav-link { 
+    width: 100%; 
+    text-align: center; 
+    padding: .65rem .75rem;
+    border-radius: 8px;
+    font-size: .8rem;
+  }
+  .nav-toggle { display: flex; }
+  
+  .app-header {
+    padding: .75rem .75rem;
+    margin-top: .5rem;
+    border-radius: 12px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .logo-wrap { 
+    justify-content: center;
+    margin-bottom: .5rem;
+  }
+  .logo { width: 48px; height: 48px; }
+  .app-header h1 { font-size: 1.2rem; letter-spacing: 1px; }
+  
+  .controls {
+    width: 100%;
+    flex-direction: column;
+    gap: .75rem;
+    align-items: stretch;
+  }
+  
+  #search {
+    width: 100%;
+    margin-bottom: .5rem;
+    padding: .75rem;
+    font-size: .9rem;
+  }
+  
+  .source-chips {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .view-toggles {
+    justify-content: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  
+  .mini-btn {
+    font-size: .75rem;
+    padding: .5rem .75rem;
+    min-width: auto;
+  }
+}
+
+/* Tablets and small laptops (481px to 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  body { padding-top: 70px; }
+  
   .main-nav { padding:.75rem 1rem; }
   .nav-brand { font-size:1.1rem; letter-spacing:1px; }
   .nav-menu { 
@@ -116,6 +270,9 @@ body:before {
     padding:1rem; gap:.75rem; display:none; 
     border-bottom:1px solid var(--border);
     box-shadow:0 8px 24px rgba(0,0,0,0.5);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    z-index: 999;
   }
   .nav-menu.active { display:flex; }
   .nav-link { 
@@ -123,6 +280,26 @@ body:before {
     border-radius:10px;
   }
   .nav-toggle { display:flex; }
+  
+  .app-header {
+    padding: 1rem;
+    border-radius: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .controls {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+  
+  #search {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: .5rem;
+  }
 }
 
 .app-header {
@@ -383,11 +560,146 @@ body:before {
 
 /* Particle styling handled via canvas in JS */
 
+/* Additional mobile responsive styles */
+@media (max-width: 480px) {
+  /* Dashboard panels responsive */
+  .dashboard-panels {
+    grid-template-columns: 1fr;
+    gap: .75rem;
+    margin: .75rem;
+  }
+  
+  .panel {
+    padding: .75rem;
+    border-radius: 10px;
+  }
+  
+  .panel h4 {
+    font-size: .9rem;
+    margin-bottom: .5rem;
+  }
+  
+  /* News list mobile */
+  .news-list {
+    margin: .75rem;
+    gap: .75rem;
+  }
+  
+  .news-item {
+    padding: .75rem;
+    border-radius: 10px;
+  }
+  
+  .news-item h3 {
+    font-size: .9rem;
+    line-height: 1.3;
+    margin-bottom: .5rem;
+  }
+  
+  .news-item p {
+    font-size: .8rem;
+    line-height: 1.4;
+  }
+  
+  .news-meta {
+    font-size: .7rem;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  
+  /* Heatmap responsive */
+  .heatmap {
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 2px;
+  }
+  
+  /* Source chips mobile */
+  .source-chips {
+    gap: .25rem;
+  }
+  
+  .source-chip {
+    padding: .4rem .6rem;
+    font-size: .7rem;
+    border-radius: 6px;
+  }
+  
+  /* Terminal modal mobile */
+  .terminal-modal {
+    padding: .5rem;
+  }
+  
+  .terminal-window {
+    max-height: 85vh;
+    border-radius: 8px;
+  }
+  
+  .terminal-body {
+    font-size: .7rem;
+    padding: .75rem;
+    line-height: 1.4;
+  }
+  
+  .terminal-header {
+    padding: .5rem .75rem;
+  }
+  
+  .terminal-title {
+    font-size: .8rem;
+  }
+  
+  /* Status indicator mobile */
+  .status {
+    font-size: .75rem;
+    padding: .4rem .6rem;
+  }
+  
+  /* Footer mobile */
+  .footer {
+    padding: .75rem;
+    font-size: .7rem;
+    text-align: center;
+  }
+  
+  /* Scroll progress mobile */
+  .scroll-progress {
+    height: 2px;
+  }
+  
+  /* New banner mobile */
+  .new-banner {
+    margin: .5rem;
+    padding: .5rem .75rem;
+    font-size: .8rem;
+    border-radius: 8px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Dashboard panels tablet */
+  .dashboard-panels {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1rem;
+  }
+  
+  .news-list {
+    margin: 1rem;
+  }
+  
+  .terminal-window {
+    max-height: 80vh;
+  }
+  
+  .terminal-body {
+    font-size: .8rem;
+    padding: 1rem;
+  }
+}
+
 @media (max-width: 760px) {
   .controls { width:100%; justify-content:flex-start; flex-wrap:wrap; }
   .controls input { flex:1; }
   .terminal-window { max-height:90vh; }
   .terminal-body { font-size:.75rem; padding:1rem; }
-  body { padding-top: 70px; }
-  .app-header { margin-top:.75rem; padding:1rem; border-radius:12px; }
 }
